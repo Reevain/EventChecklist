@@ -62,7 +62,7 @@ export default function SignUp() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Jane Doe"
+              placeholder="User Name"
             />
           </div>
           <div>
@@ -73,7 +73,7 @@ export default function SignUp() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="you@example.com"
+              placeholder="you@gmail.com"
             />
           </div>
           <div>

@@ -19,7 +19,7 @@ export default function Home() {
     {
       id: 3,
       name: 'Placement Cell Team',
-      university: 'Seoul National University',
+      university: 'DTU',
       text: 'From company invites to session logistics, the checklist view kept our placement drive stress free.',
       rating: 5,
     },

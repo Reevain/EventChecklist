@@ -1,23 +1,21 @@
 import express from 'express';
 import cors from 'cors';
-import ApiError from './utils/ErrorHandeler.js';   // make sure filename matches
+import ApiError from './utils/ErrorHandeler.js';   
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
 
-// Middlewares
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.FRONTEND_URL || "http://localhost:5173"
-      : "http://localhost:5173", // Can't use '*' with credentials: true
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies to be sent
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://your-frontend-name.vercel.app'
+  ],
+  credentials: true
   })
 );
 app.use(cookieParser());

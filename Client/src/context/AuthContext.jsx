@@ -39,12 +39,13 @@ export function AuthProvider({ children }) {
       const response = await authAPI.login(email, password);
       // After successful login, verify to get user info
       const verifyResponse = await authAPI.verify();
-      if (verifyResponse && verifyResponse.data && verifyResponse.data.user) {
+      if (verifyResponse?.data?.user) {
         setUser(verifyResponse.data.user);
       }
       setIsAuthenticated(true);
       return response;
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -54,12 +55,13 @@ export function AuthProvider({ children }) {
       const response = await authAPI.register(name, email, password);
       // After successful registration, verify to get user info
       const verifyResponse = await authAPI.verify();
-      if (verifyResponse && verifyResponse.data && verifyResponse.data.user) {
+      if (verifyResponse?.data?.user) {
         setUser(verifyResponse.data.user);
       }
       setIsAuthenticated(true);
       return response;
     } catch (error) {
+      console.error('Registration error:', error);
       throw error;
     }
   };
