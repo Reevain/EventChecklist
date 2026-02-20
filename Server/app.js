@@ -1,29 +1,36 @@
 import express from 'express';
 import cors from 'cors';
-import ApiError from './utils/ErrorHandeler.js';   
-import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
+import ApiError from './utils/ErrorHandeler.js';
+import router from './routes/index.js';
 
 const app = express();
 
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-import cors from 'cors';
+// ================= CORS CONFIG =================
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://eventchecklist-seven.vercel.app' // ❗ NO trailing slash
+];
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://eventchecklist-seven.vercel.app/'
-  ],
-  methods: ['GET','POST','PUT','DELETE'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-  })
-);
+}));
+
+// ================= MIDDLEWARE =================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// Routes
+
+// ================= ROUTES =================
 app.use('/api', router);
 
 // Test route
@@ -31,12 +38,10 @@ app.get('/', (req, res) => {
   res.send('Hello World! from Express.js');
 });
 
-
-// Global Error Handler (must be last)
+// ================= GLOBAL ERROR HANDLER =================
 app.use((err, req, res, next) => {
   console.error(err);
 
-  // Handle known ApiError
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       status: "error",
@@ -44,7 +49,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Unknown error fallback
   return res.status(500).json({
     status: "error",
     message: err.message || 'Internal Server Error',
