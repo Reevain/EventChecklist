@@ -12,13 +12,22 @@ const allowedOrigins = [
   'https://eventchecklist-seven.vercel.app' // ❗ NO trailing slash
 ];
 
+import cors from 'cors';
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+
+    // Allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (
+      origin.includes('localhost') ||
+      origin.includes('vercel.app')
+    ) {
+      return callback(null, true);
     }
+
+    return callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
