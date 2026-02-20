@@ -1,20 +1,21 @@
-import app from './app.js';
-import connectDB from './config/Db.config.js';
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import app from "./app.js";
+
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
-const initializeServer = async () => {
-  try {
-    await connectDB();
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected ✅");
+
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT} 🚀`);
     });
-  } catch (error) {
-    console.error('Failed to initialize server:', error.message);
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err.message);
     process.exit(1);
-  }
-};
-
-initializeServer();
+  });

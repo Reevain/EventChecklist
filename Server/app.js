@@ -1,47 +1,54 @@
-import express from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import ApiError from './utils/ErrorHandeler.js';
-import router from './routes/index.js';
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import router from "./routes/index.js";
+import ApiError from "./utils/ErrorHandeler.js";
 
 const app = express();
 
-/* ================= CORS ================= */
+/* ===========================
+   ✅ CORS — FINAL WORKING VERSION
+   =========================== */
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow Postman / server calls
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+      if (
+        origin.includes("localhost") ||
+        origin.includes("vercel.app")
+      ) {
+        return callback(null, true);
+      }
 
-    if (
-      origin.includes('localhost') ||
-      origin.includes('vercel.app')
-    ) {
-      return callback(null, true);
-    }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-    return callback(new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-
-/* ================= MIDDLEWARE ================= */
-
+/* ===========================
+   Middlewares
+   =========================== */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* ================= ROUTES ================= */
+/* ===========================
+   Routes
+   =========================== */
+app.use("/api", router);
 
-app.use('/api', router);
-
-app.get('/', (req, res) => {
-  res.send('Hello World! from Express.js');
+/* Test route */
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
 });
 
-/* ================= GLOBAL ERROR HANDLER ================= */
-
+/* ===========================
+   Global Error Handler
+   =========================== */
 app.use((err, req, res, next) => {
   console.error(err);
 
@@ -54,7 +61,7 @@ app.use((err, req, res, next) => {
 
   return res.status(500).json({
     status: "error",
-    message: err.message || 'Internal Server Error',
+    message: err.message || "Internal Server Error",
   });
 });
 
