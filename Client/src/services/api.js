@@ -1,79 +1,80 @@
 // API service for making requests to the backend
-const API_BASE_URL = 'https://your-render-url.onrender.com/api';
+const API_BASE_URL = 'https://eventbackend-ho0f.onrender.com';
 
-// Helper function to make API requests with cookies
+// Helper function to make API requests using Bearer token
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  const defaultOptions = {
-    credentials: 'include', // Important: Include cookies in requests
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  };
+
+  // Get token from localStorage
+  const token = localStorage.getItem('token');
 
   const config = {
-    ...defaultOptions,
     ...options,
     headers: {
-      ...defaultOptions.headers,
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
   };
 
   try {
     const response = await fetch(url, config);
-    
-    // Handle non-JSON responses
-    let data;
+
     const contentType = response.headers.get('content-type');
+    let data;
+
     if (contentType && contentType.includes('application/json')) {
       data = await response.json();
     } else {
-      data = { message: await response.text() || `HTTP error! status: ${response.status}` };
+      data = { message: await response.text() };
     }
 
     if (!response.ok) {
-      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
+      throw new Error(data.message || 'Request failed');
     }
 
     return data;
+
   } catch (error) {
-    // Re-throw if it's already an Error with a message
-    if (error instanceof Error) {
-      throw error;
-    }
-    // Otherwise wrap in Error
     throw new Error(error.message || 'Network error occurred');
   }
 }
 
-// Auth API methods
+// ================= AUTH API =================
 export const authAPI = {
   login: async (email, password) => {
-    // Only send email and password for login (no name field)
-    return apiRequest('/auth/login', {
+    const data = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+
+    // Store token after login
+    if (data?.data?.token) {
+      localStorage.setItem('token', data.data.token);
+    }
+
+    return data;
   },
 
   register: async (name, email, password) => {
-    return apiRequest('/auth/register', {
+    const data = await apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password }),
     });
+
+    // Store token after register
+    if (data?.data?.token) {
+      localStorage.setItem('token', data.data.token);
+    }
+
+    return data;
   },
 
   logout: async () => {
-    return apiRequest('/auth/logout', {
-      method: 'POST',
-    });
+    localStorage.removeItem('token');
+    return { message: "Logged out" };
   },
 
-  // Verify if user is authenticated by checking cookie
   verify: async () => {
     return apiRequest('/auth/verify', {
       method: 'GET',
@@ -81,9 +82,9 @@ export const authAPI = {
   },
 };
 
-// Event (checklist) API methods
+// ================= EVENTS API =================
 export const eventsAPI = {
-  // Create a new event (optionally with tasks)
+
   createEvent: async (eventData) => {
     return apiRequest('/events', {
       method: 'POST',
@@ -91,7 +92,6 @@ export const eventsAPI = {
     });
   },
 
-  // Get paginated list of events
   getEvents: async (params = {}) => {
     const query = new URLSearchParams(params).toString();
     const suffix = query ? `?${query}` : '';
@@ -100,14 +100,12 @@ export const eventsAPI = {
     });
   },
 
-  // Get a single event by id
   getEventById: async (id) => {
     return apiRequest(`/events/${id}`, {
       method: 'GET',
     });
   },
 
-  // Update event
   updateEvent: async (id, updates) => {
     return apiRequest(`/events/${id}`, {
       method: 'PUT',
@@ -115,14 +113,12 @@ export const eventsAPI = {
     });
   },
 
-  // Delete event
   deleteEvent: async (id) => {
     return apiRequest(`/events/${id}`, {
       method: 'DELETE',
     });
   },
 
-  // Task operations
   addTask: async (eventId, taskData) => {
     return apiRequest(`/events/${eventId}/tasks`, {
       method: 'POST',
