@@ -44,9 +44,34 @@ export const authAPI = {
   },
 
   verify: () => apiRequest("/auth/verify"),
+
   logout: () => {
     localStorage.removeItem("token");
   },
+};
+
+
+export const eventsAPI = {
+  getEvents: () => apiRequest("/events"),
+
+  getEventById: (id) => apiRequest(`/events/${id}`),
+
+  createEvent: (data) =>
+    apiRequest("/events", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  updateEvent: (id, data) =>
+    apiRequest(`/events/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  deleteEvent: (id) =>
+    apiRequest(`/events/${id}`, {
+      method: "DELETE",
+    }),
 };
 
 export default apiRequest;
