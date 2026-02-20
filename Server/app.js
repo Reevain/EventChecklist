@@ -6,16 +6,10 @@ import router from './routes/index.js';
 
 const app = express();
 
-// ================= CORS CONFIG =================
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://eventchecklist-seven.vercel.app' // ❗ NO trailing slash
-];
+/* ================= CORS ================= */
 
 app.use(cors({
   origin: function (origin, callback) {
-
-    // Allow requests with no origin (like Postman)
     if (!origin) return callback(null, true);
 
     if (
@@ -32,20 +26,22 @@ app.use(cors({
   credentials: true
 }));
 
-// ================= MIDDLEWARE =================
+/* ================= MIDDLEWARE ================= */
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ================= ROUTES =================
+/* ================= ROUTES ================= */
+
 app.use('/api', router);
 
-// Test route
 app.get('/', (req, res) => {
   res.send('Hello World! from Express.js');
 });
 
-// ================= GLOBAL ERROR HANDLER =================
+/* ================= GLOBAL ERROR HANDLER ================= */
+
 app.use((err, req, res, next) => {
   console.error(err);
 
