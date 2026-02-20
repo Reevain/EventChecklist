@@ -1,6 +1,5 @@
 // API service for making requests to the backend
-const API_BASE_URL = 'https://eventbackend-ho0f.onrender.com';
-
+const API_BASE_URL = 'https://eventbackend-h0of.onrender.com/api';
 // Helper function to make API requests using Bearer token
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
