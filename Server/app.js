@@ -12,8 +12,6 @@ const allowedOrigins = [
   'https://eventchecklist-seven.vercel.app' // ❗ NO trailing slash
 ];
 
-import cors from 'cors';
-
 app.use(cors({
   origin: function (origin, callback) {
 
