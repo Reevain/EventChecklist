@@ -1,4 +1,4 @@
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://eventbackend-h0of.onrender.com/api";
 
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem("token");
