@@ -1,20 +1,10 @@
-import Router from 'express';
-import authController from '../controllers/auth.controller.js';
-import { authenticate } from '../middlewares/auth.middleware.js';
+import express from "express";
+import authController from "../controllers/auth.controller.js";
 
-const router = Router();
+const router = express.Router();
 
-// Test route
-router.get("/authTest", (req, res) => {
-  res.send("Auth route is working");
-});
-
-// Public routes
-router.post('/login', authController.login);
-router.post('/register', authController.register);
-router.post('/logout', authController.logout);
-
-// Protected route (Bearer token)
-router.get('/verify', authenticate, authController.verify);
+router.post("/register", authController.register);
+router.post("/login", authController.login);
+router.get("/verify", authController.verify);
 
 export default router;
